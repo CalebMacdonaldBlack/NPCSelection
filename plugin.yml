@@ -1,0 +1,7 @@
+main: com.gigabytedx.Main
+version: 1.0
+name: npc_selection
+
+commands:
+  command:
+    description: description
