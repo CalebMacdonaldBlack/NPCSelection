@@ -12,6 +12,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.gigabytedx.npcselection.events.Interact;
+import com.gigabytedx.npcselection.events.InventoryInteract;
 
 public class Main extends JavaPlugin {
 
@@ -35,6 +36,7 @@ public class Main extends JavaPlugin {
 	private void registerEvents() {
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new Interact(this, npcMenusConfig), this);
+		pm.registerEvents(new InventoryInteract(this, npcMenusConfig), this);
 	}
 
 	public void onDisable() {
