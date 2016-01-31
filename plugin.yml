@@ -1,4 +1,4 @@
-main: com.gigabytedx.Main
+main: com.gigabytedx.npcselection.Main
 version: 1.0
 name: npc_selection
 

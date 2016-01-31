@@ -1,5 +1,6 @@
 package com.gigabytedx.npcselection.events;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -21,35 +22,43 @@ import com.gigabytedx.npcselection.Main;
 public class Interact implements Listener {
 	Main plugin;
 	Configuration config;
+
 	public Interact(Main plugin, Configuration config) {
 		this.plugin = plugin;
 		this.config = config;
 	}
-	
+
 	@EventHandler
-	public void onEntityInteract(PlayerInteractAtEntityEvent event){
+	public void onEntityInteract(PlayerInteractAtEntityEvent event) {
 		Player player = event.getPlayer();
-		if(event.getRightClicked() instanceof LivingEntity){
+		if (event.getRightClicked() instanceof LivingEntity) {
 			LivingEntity entity = (LivingEntity) event.getRightClicked();
 			String npcName = entity.getCustomName();
 			Set<String> npcNames = config.getConfigurationSection("npc").getKeys(false);
-			if(npcNames.contains(npcName)){
+			if (npcNames.contains(npcName)) {
 				player.openInventory(getInventory(config, npcName));
 			}
 		}
 	}
-	
+
 	private Inventory getInventory(Configuration config, String npcName) {
 		Inventory inventoryScreen = Bukkit.createInventory(null, 9, "NPC: " + npcName);
 		Set<String> list = config.getConfigurationSection("npc." + npcName + ".options").getKeys(false);
 		for (String itemData : list) {
-			ItemStack itemStack = new ItemStack(Material.valueOf(config.getString("npc." + npcName + ".options." + itemData + ".material")));
+			ItemStack itemStack = null;
+			String materialName = config.getString("npc." + npcName + ".options." + itemData + ".material");
+			try {
+				itemStack = new ItemStack(Material.valueOf(materialName));
+			} catch (IllegalArgumentException e) {
+				plugin.logError("Could not find an item named '" + materialName + "'. Please check the config file");
+				continue;
+			}
 			ItemMeta meta = itemStack.getItemMeta();
 			meta.setDisplayName(ChatColor.GREEN + itemData);
-			
-			List<String> lore = meta.getLore();
-			String loreText = config.getString(config.getString("npc." + npcName + ".options." + itemData + ".lore"));
-			
+
+			List<String> lore = new ArrayList<>();
+			String loreText = config.getString("npc." + npcName + ".options." + itemData + ".lore");
+			plugin.logDebug("Lore Text" + loreText);
 			try {
 				String[] words = loreText.split("\\s+");
 
@@ -65,8 +74,9 @@ public class Interact implements Listener {
 				}
 				lore.add(sentence);
 			} catch (NullPointerException e) {
+				e.printStackTrace();
 			}
-			
+
 			meta.setLore(lore);
 			itemStack.setItemMeta(meta);
 			inventoryScreen.addItem(itemStack);

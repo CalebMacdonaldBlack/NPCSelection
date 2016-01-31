@@ -17,10 +17,11 @@ public class Main extends JavaPlugin {
 
 	private File npcMenusFile = new File(getDataFolder() + "/Data/npcMenusFile.yml");
 	private FileConfiguration npcMenusConfig = YamlConfiguration.loadConfiguration(npcMenusFile);
+	Logger logger;
 
 	public void onEnable() {
 		PluginDescriptionFile pdfFile = getDescription();
-		Logger logger = getLogger();
+		logger = getLogger();
 		registerCommands();
 		loadFiles(npcMenusFile, npcMenusConfig);
 		registerEvents();
@@ -65,6 +66,16 @@ public class Main extends JavaPlugin {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+	}
+
+	public void logError(String msg) {
+			logger.severe(msg);
+	}
+	
+	public void logDebug(String msg) {
+		if (npcMenusConfig.getBoolean("enableDebug")) {
+			logger.info("[Debug] " + msg);
 		}
 	}
 }
